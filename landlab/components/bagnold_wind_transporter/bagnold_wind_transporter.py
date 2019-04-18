@@ -65,7 +65,7 @@ class BagnoldWindTransporter(Component):
         sediment_density=3000,  # default values.
         **kwds
     ):
-        # This runs the __init__ on Component
+        super(BagnoldWindTransporter, self).__init__(grid)
         
         self._grid = grid
 
