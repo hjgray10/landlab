@@ -1,4 +1,5 @@
 from .chi_index import ChiFinder
+from .bagnold_wind_transporter import BagnoldWindTransporter
 from .diffusion import LinearDiffuser
 from .fire_generator import FireGenerator
 from .detachment_ltd_erosion import DetachmentLtdErosion
@@ -48,6 +49,7 @@ from .lithology import Lithology, LithoLayers
 
 COMPONENTS = [
     ChiFinder,
+    BagnoldWindTransporter,
     LinearDiffuser,
     Flexure,
     FlowRouter,
