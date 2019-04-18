@@ -233,6 +233,14 @@ Weathering
 
   landlab.components.weathering
 
+Wind
+----
+
+.. toctree::
+  :maxdepth: 4
+
+  landlab.components.bagnold_wind_transporter
+
 Terrain Analysis
 ----------------
 
