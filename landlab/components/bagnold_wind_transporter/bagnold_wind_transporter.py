@@ -27,8 +27,48 @@ class BagnoldWindTransporter(Component):
 
     Examples
     --------
+
+    Import necessary modules
+
+    >>> from landlab import RasterModelGrid
     >>> from landlab.components import BagnoldWindTransporter
-    >>> # eventually we will put an example here.
+
+    Create grid and set boundary conditions.
+
+    >>> mg = RasterModelGrid(6,8)
+    >>> mg.set_closed_boundaries_at_grid_edges(True, True, True, True)
+
+    Create required grid fields and populate with values.
+
+    >>> d = mg.add_zeros('node','soil__depth')
+    >>> d[:] = 1
+    >>> u = mg.add_zeros('node','wind__shear_velocity')
+    >>> u[:] = 2
+    >>> wind_dir = mg.add_zeros('node','wind__direction')
+    >>> wind_dir[:] = 45
+
+    Instantiate a BagnoldWindTransporter and run forward 1000 timesteps.
+
+    >>> bwt = BagnoldWindTransporter(
+    ...     mg,
+    ...     sediment_density = 1200,
+    ...     grain_size = 2.00e-6)
+    >>> for _ in range(1000):
+    ...     bwt.run_one_step(dt=1.0)
+
+    We can see that the sediment has piled up in the correct corner.
+
+    >>> np.round(mg.at_node['soil__depth'][mg.core_nodes], decimals=1)
+    array([ 0. ,  0. ,  0. ,  0. ,  0. ,  0. ,
+            0.6,  0.7,  0.7,  0.7,  0.7,  0.7,
+            1. ,  1. ,  1. ,  1. ,  1. ,  1. ,
+            2.3,  2.3,  2.3,  2.3,  2.3,  2.4])
+
+    And that we have conserved sediment mass. This makes sense as we used
+    closed boundaries.
+
+    >>> np.isclose(np.sum(mg.at_node['soil__depth']), 4 * 6 * 2, atol=0.01)
+    True
     """
 
     _name = "BagnoldWindTransporter"
@@ -39,14 +79,14 @@ class BagnoldWindTransporter(Component):
 
     _var_units = {
         "soil__depth": "m",
-        "wind__direction": "TODO"
+        "wind__direction": "TODO",
         "wind_sed__flux": "m3/s",
         "wind__shear_velocity": "m/s",
     }
 
     _var_mapping = {
         "soil__depth": "node",
-        "wind__direction": "node"
+        "wind__direction": "node",
         "wind__shear_velocity": "link",
         "wind__sed_flux": "link",
     }
@@ -61,8 +101,8 @@ class BagnoldWindTransporter(Component):
     def __init__(
         self,
         grid,
-        grain_size=0.001,  # put in default values
-        sediment_density=3000,  # default values.
+        grain_size=1e-6,  # put in default values
+        sediment_density=1200,  # default values.
         **kwds
     ):
         super(BagnoldWindTransporter, self).__init__(grid)
@@ -89,7 +129,7 @@ class BagnoldWindTransporter(Component):
 
         # Check for a shear velocity field and throw an error if one isn't present
         if "wind__shear_velocity" in grid.at_node:
-            self.u_star = grid.at_node["shear__velocity"]
+            self.u_star = grid.at_node["wind__shear_velocity"]
         else:
             raise FieldError(
                 "You must supply a grid field of wind shear velocities at nodes to run this component"
@@ -103,7 +143,7 @@ class BagnoldWindTransporter(Component):
                 "You must supply a grid field of wind directions at nodes to run this component"
             )
 
-    def convert_azimuth_to_cartesian(self, grid, wind_direction):
+    def convert_azimuth_to_cartesian(self):
         #### DANGER DANGER. I would mot re-write the wind direction field. I would either:
         ## a) expect the wind direction in the format you want it. The end.
         # or
@@ -125,7 +165,7 @@ class BagnoldWindTransporter(Component):
             self.grid["node"]["wind__direction"]
         )
 
-    def wind_sed_flux_calc(self, grid):
+    def wind_sed_flux_calc(self):
 
         ## Let's first break the wind vector (direction and magnitude) on the nodes into x and y components and sum them on the links
 
@@ -340,6 +380,6 @@ class BagnoldWindTransporter(Component):
         """
 
         self.convert_azimuth_to_cartesian()
-        self.windsedflux(dt)
-        self.zero_soil_nodes()
+        self.wind_sed_flux_calc()
+        self.zero_soil_nodes(dt)
         self.bagnold_wind_transporter(dt)
