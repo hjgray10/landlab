@@ -69,7 +69,11 @@ class BagnoldWindTransporter(Component):
         
         self._grid = grid
 
-        self.d = grain_size
+        # Unless it is really important that a user acesses the grain size
+        # I would recommend saving it as a private variable (put the underscore first)
+        #  also, I don't think you use the grain size with this as written.
+        self._d = grain_size
+        self._rho = sediment_density
     
         # Check for soil depth field and build array if necessary
         if "soil__depth" in grid.at_node:
@@ -153,7 +157,12 @@ class BagnoldWindTransporter(Component):
         
         wind_shear_on_the_links = np.sqrt(wind_avg_x_component_on_link**2.0 + wind_avg_y_component_on_link**2.0)
         
-        wind_sed_flux_mag_on_link = (1.0/sediment_density)*(1.8*(1.225/(9.81))*np.sqrt(grain_size/(2.50e-6))*np.power(wind_shear_on_the_links,3))
+        wind_sed_flux_mag_on_link = (1.0 / self._rho) * (
+            1.8
+            * (1.225 / (9.81))
+            * np.sqrt(self._d / (2.50e-6))
+            * np.power(wind_shear_on_the_links, 3)
+        )
         
         angle_factor = np.cos(wind_angle_on_the_links - self.grid.angle_of_link)
     #    angle_factor[angle_factor==np.cos(np.pi/2.0)] = 0.0
