@@ -6,16 +6,24 @@ from landlab.grid.divergence import calc_flux_div_at_node
 
 class BagnoldWindTransporter(Component):
     """
-    This is a landlab component to simulate the 
-    movement of sediment by wind action.
-    
-    The component uses the Bagnold 1937 formula to calculate
-    the changes in soil depth.
-    
-    """
+    Component to simulate the movement of sediment by wind action.
 
-    
-    _name = 'BagnoldWindTransporter'
+    The component uses the Bagnold 1937 formula to calculate the changes in
+    the field stored at "soil__depth". Here soil refers generally to material
+    that can be entrained by wind.
+
+    TODO: I would put a statement here about expectations what fields this
+    component uses as well as a statement about wind direction units and
+    reference frame.
+
+    Parameters
+    ----------
+    grid : ModelGrid
+        A Landlab grid.
+    parameter_name : type
+        Description (including default value)
+
+        TODO: add all parameters.
     
     _input_var_names = ('soil__depth',
                         'wind__direction'
