@@ -1,9 +1,7 @@
+import numpy as np
 
 from landlab import CLOSED_BOUNDARY, INACTIVE_LINK, Component, FieldError
-
 from landlab.grid.divergence import calc_flux_div_at_node
-
-import numpy as np
 
 
 class BagnoldWindTransporter(Component):
