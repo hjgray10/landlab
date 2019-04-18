@@ -118,11 +118,11 @@ class BagnoldWindTransporter(Component):
         
         ## Let's first break the wind vector (direction and magnitude) on the nodes into x and y components and sum them on the links
         
-        wind_avg_x_component_on_link = np.sum(
-                self.grid['node']['wind__shear_velocity'][self.grid.nodes_at_link]*np.cos(self.grid['node']['wind__direction'][self.grid.nodes_at_link]),
+        # since you wrote self.u_star = self.grid.at_node['wind__shear_velocity'] earlier, you can now use that instead of
+        # self.grid['node']['wind__shear_velocity']
                 axis=1)/2.0
                 
-        wind_avg_y_component_on_link = np.sum(
+        # ditto for wind__direction and the at link fields at the end of this function.
                 self.grid['node']['wind__shear_velocity'][self.grid.nodes_at_link]*np.sin(self.grid['node']['wind__direction'][self.grid.nodes_at_link]),
                 axis=1)/2.0
                
