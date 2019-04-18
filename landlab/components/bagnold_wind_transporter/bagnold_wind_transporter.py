@@ -24,28 +24,40 @@ class BagnoldWindTransporter(Component):
         Description (including default value)
 
         TODO: add all parameters.
-    
-    _input_var_names = ('soil__depth',
-                        'wind__direction'
-                        'wind__shear_velocity')
-    
-    _output_var_names = ('soil__depth',
-                         'wind_sed__flux')
-    
-    _var_units = {'soil__depth': 'm',
-                  'wind_sed__flux': 'm3/s',
-                  'wind__shear_velocity': 'm/s'}
-    
+
+    Examples
+    --------
+    >>> from landlab.components import BagnoldWindTransporter
+    >>> # eventually we will put an example here.
+    """
+
+    _name = "BagnoldWindTransporter"
+
+    _input_var_names = ("soil__depth", "wind__direction" "wind__shear_velocity")
+
+    _output_var_names = ("soil__depth", "wind_sed__flux")
+
+    _var_units = {
+        "soil__depth": "m",
+        "wind__direction": "TODO"
+        "wind_sed__flux": "m3/s",
+        "wind__shear_velocity": "m/s",
+    }
+
     _var_mapping = {
-            'soil__depth': 'node',
-            'wind__shear_velocity': 'link',
-            'wind__sed_flux': 'link'}
-    
+        "soil__depth": "node",
+        "wind__direction": "node"
+        "wind__shear_velocity": "link",
+        "wind__sed_flux": "link",
+    }
+
     _var_doc = {
-        'soil__depth': 'depth of soil/weather bedrock',
-        'wind__sed_flux': 'local wind-blown sediment flux from Bagnold 1937',
-        'wind__shear_velocity': 'the shear velocity at a node'}
-        
+        "soil__depth": "depth of soil/weather bedrock",
+        "wind__sed_flux": "local wind-blown sediment flux from Bagnold 1937",
+        "wind__shear_velocity": "the shear velocity at a node",
+        "wind__direction": "TODO: state reference frame here too"
+    }
+
         
     def __init__(self, 
                  grid,
