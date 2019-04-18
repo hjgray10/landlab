@@ -1,11 +1,5 @@
 
-from landlab import (Component, 
-                     FieldError, 
-                     INACTIVE_LINK, 
-                     CLOSED_BOUNDARY, 
-                     FIXED_GRADIENT_BOUNDARY, 
-                     ACTIVE_LINK, 
-                     FIXED_LINK)
+from landlab import CLOSED_BOUNDARY, INACTIVE_LINK, Component, FieldError
 
 from landlab.grid.divergence import calc_flux_div_at_node
 
