@@ -104,7 +104,13 @@ class BagnoldWindTransporter(Component):
     
     
     def convert_azimuth_to_cartesian(self, grid, wind_direction):
-        
+        #### DANGER DANGER. I would mot re-write the wind direction field. I would either:
+        ## a) expect the wind direction in the format you want it. The end.
+        # or
+        # b) ask for the wind direction in a specific format and then convert it
+        # to a more usable form but store that NOT in a field but in a private variable (self._wind_dir_math?)
+
+        # note also that I've created a PR to create a function that will do this conversion for everyone.
         ## probably want to convert into cartesian math degree form
         self.grid['node']['wind__direction'] = np.abs(np.abs(self.grid['node']['wind__direction'] -360) + 90)
         self.grid['node']['wind__direction'][np.where(self.grid['node']['wind__direction']>359)] -= 360
@@ -167,12 +173,18 @@ class BagnoldWindTransporter(Component):
         angle_factor = np.cos(wind_angle_on_the_links - self.grid.angle_of_link)
     #    angle_factor[angle_factor==np.cos(np.pi/2.0)] = 0.0
         wind_sed_flux_on_link = wind_sed_flux_mag_on_link*angle_factor
-        wind_sed_flux_on_link[self.grid.status_at_link==4] = 0
-        
+        wind_sed_flux_on_link[
+            self.grid.status_at_link == INACTIVE_LINK
+        ] = (
+            0
+        )  ## DANGER. Don't use the number 4, import the correct variable from Landlab.
         self.grid['link']['wind__link_shear_velocity'] = wind_shear_on_the_links
         self.grid['link']['wind__angle_on_the_link'] = wind_angle_on_the_links
         self.grid['link']['wind__sed_mass_flux'] = wind_sed_flux_on_link 
             
+        # danger danger. you want to use [:] at the end of this.
+        # eg.  self.grid['link']['wind__link_shear_velocity'][:] = wind_shear_on_the_links
+        # that way you replace the contents of the array without changing the pointer.
         
     
     ## Ok now need to start thinking about boundary conditions
@@ -198,8 +210,13 @@ class BagnoldWindTransporter(Component):
         # 1 is outgoing, 0 is no flow, -1 is incoming, nan is an outside link
         
         # create a boolean array for incoming and outgoing links and close closed boundary links
-        incoming_links_bool = np.logical_and(np.array([wind_incoming_or_outgoing==-1]), self.grid.link_status_at_node!=4) #np.array([wind_incoming_or_outgoing==-1]) #
-        outgoing_links_bool = np.logical_and(np.array([wind_incoming_or_outgoing==1]), self.grid.link_status_at_node!=4) #np.array([wind_incoming_or_outgoing==1]) #
+        incoming_links_bool = np.logical_and(
+            np.array([wind_incoming_or_outgoing == -1]),
+            self.grid.link_status_at_node != CLOSED_BOUNDARY,
+        )  # np.array([wind_incoming_or_outgoing==-1]) #
+        outgoing_links_bool = np.logical_and(
+            np.array([wind_incoming_or_outgoing == 1]),
+            self.grid.link_status_at_node != CLOSED_BOUNDARY,
         
         # get the nodes that will go negative next timestep - "danger nodes"
         
