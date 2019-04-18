@@ -43,11 +43,11 @@ class BagnoldWindTransporter(Component):
         
     def __init__(self, 
                  grid,
-                 wind_direction = None,
-                 wind__shear_velocity = None,
-                 threshold_shear_velocity = None,
-                 grain_size=None, 
-                 **kwds):
+        grain_size=0.001,  # put in default values
+        sediment_density=3000,  # default values.
+        **kwds
+    ):
+        # This runs the __init__ on Component
         
         self._grid = grid
 
