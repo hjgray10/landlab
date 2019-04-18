@@ -95,7 +95,7 @@ class BagnoldWindTransporter(Component):
         "soil__depth": "depth of soil/weather bedrock",
         "wind__sed_flux": "local wind-blown sediment flux from Bagnold 1937",
         "wind__shear_velocity": "the shear velocity at a node",
-        "wind__direction": "TODO: state reference frame here too"
+        "wind__direction": "TODO: state reference frame here too",
     }
 
     def __init__(
